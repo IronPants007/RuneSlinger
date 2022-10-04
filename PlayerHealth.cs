@@ -6,13 +6,14 @@ using UnityEngine.SceneManagement;
 public class PlayerHealth : MonoBehaviour
 {
 
-    public int maxHealth = 120;
+    public int maxHealth = 50;
     public int currentHealth;
     public int Respawn;
     public HealthBar healthBar;
 
     void Start()
     {
+        maxHealth = 50;
         currentHealth = maxHealth;
         healthBar.SetMaxHealth(maxHealth);
     }
@@ -21,7 +22,7 @@ public class PlayerHealth : MonoBehaviour
     {
         if (other.CompareTag("Obstacle"))
         {
-            TakeDamage(40);
+            TakeDamage(12);
 
        if(currentHealth <=0)
             {
