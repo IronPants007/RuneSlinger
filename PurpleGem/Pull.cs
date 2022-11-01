@@ -8,19 +8,19 @@ public class Pull : MonoBehaviour
 
     public string pullableTag;
 
-    public float modifier = 1.0f;
+    public float modifier = 12.0f;
 
     Vector3 pullForce;
 
     public Transform heldObject;
 
-    public float positionDistanceThreshold;
+    public float positionDistanceThreshold = 0.5f;
 
-    public float velocityDistanceThreshold;
+    public float velocityDistanceThreshold = 10f;
 
-    public float maxVelocity;
+    public float maxVelocity = 75f;
 
-    public float throwVelocity;
+    public float throwVelocity = 25f;
 
     void Update()
     {
