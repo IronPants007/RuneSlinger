@@ -1,0 +1,15 @@
+private void OnCollisionEnter(Collision  collision )
+    {
+
+       if (collision.gameObject.tag == "enemyBullet") 
+        {
+            health -= 10;
+            Destroy(collision.gameObject);
+
+        }
+
+        if (health < 1)
+        {
+            Destroy(gameObject);
+        }
+    }
