@@ -7,7 +7,7 @@ public class Player : MonoBehaviour
 {
 
     public int maxHealth = 120;
-    public int currentHealth;
+    private int currentHealth;
     public int Respawn;
     public HealthBar healthBar;
 
@@ -25,7 +25,7 @@ public class Player : MonoBehaviour
 
             if (currentHealth <= 0)
             {
-                SceneManager.LoadScene(Respawn);
+                SceneManager.LoadScene("Level1");
             }
         }
     }
