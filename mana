@@ -1,0 +1,41 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class manaBar : MonoBehaviour
+{
+    public float mana = 100.0f;
+    
+    // Start is called before the first frame update
+    void Start()
+    {
+        StartCoroutine(regainMana());  
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+    public void depleteMana(float amount)
+    {
+        mana -= amount;
+    }
+    
+    IEnumerator regainMana()
+    {
+        while (true)
+        {
+
+            if (mana < 100.0f)
+            {
+                mana += 2f; // increase health and wait the specified time
+                yield return new WaitForSeconds(0.5f);
+            }
+            else
+            { // if health >= 100, just yield 
+                yield return null;
+            }
+        }
+    }
+}
