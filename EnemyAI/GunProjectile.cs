@@ -1,0 +1,134 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
+
+public class GunProjectile : MonoBehaviour
+{
+    //Bullet
+    public GameObject bullet;
+
+    //bullet force
+    public float shootForce, upwardForce;
+
+    //gun stats
+    public float timeBetweenShooting, spread, reloadTime, timeBetweenShots;
+    public int magazineSize, bulletsPerTap;
+    public bool allowButtonHold;
+
+    int bulletsLeft, bulletsShot;
+
+    //bools
+    bool shooting;
+    public bool readyToShoot; 
+    public bool reloading;
+
+    //reference
+    public Camera fpsCam;
+    public Transform attackPoint;
+
+    //graphics 
+    public GameObject muzzleFlash;
+
+    //bug fixing
+    public bool allowInvoke = true;
+
+    private void Awake()
+    {
+        //make sure magazine is full
+        bulletsLeft = magazineSize;
+        readyToShoot = true;
+    }
+    // Update is called once per frame
+    void Update()
+    {
+        MyInput();
+    }
+
+    private void MyInput()
+    {
+        //check if allowed to hold button
+        if (allowButtonHold) shooting = Input.GetKey(KeyCode.Mouse0);
+        else shooting = Input.GetKeyDown(KeyCode.Mouse0);
+
+        //reloading
+        if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !reloading) Reload();
+        if (readyToShoot && shooting && !reloading && bulletsLeft <= 0) Reload();
+        //shooting
+        if (readyToShoot && shooting && !reloading && bulletsLeft > 0)
+        {
+            //set bullets shot to 0
+            bulletsShot = 0;
+
+            Shooting();
+        }
+    }
+
+    private void Shooting()
+    {
+        readyToShoot = false;
+
+        //find hit position using raycast
+        Ray ray = fpsCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0)); //ray through middle
+        RaycastHit hit;
+
+        //check if ray hits something
+        Vector3 targetPoint;
+        if (Physics.Raycast(ray, out hit))
+            targetPoint = hit.point;
+        else
+            targetPoint = ray.GetPoint(75);
+
+        //calculate direction attack to target
+        Vector3 directionWithoutSpread = targetPoint - attackPoint.position;
+
+        //calculate spread
+        float x = Random.Range(-spread, spread);
+        float y = Random.Range(-spread, spread);
+
+        //calculate direction with spread
+        Vector3 directionWithSpread = directionWithoutSpread + new Vector3(x, y, 0);
+
+        //spawn bullet
+        GameObject currentBullet = Instantiate(bullet, attackPoint.position, Quaternion.identity);
+
+        //Rotate bullet shoot direction
+        currentBullet.transform.forward = directionWithSpread.normalized;
+
+        //Add force to bullet
+        currentBullet.GetComponent<Rigidbody>().AddForce(directionWithSpread.normalized * shootForce, ForceMode.Impulse);
+
+        //upward force (if needed)
+        currentBullet.GetComponent<Rigidbody>().AddForce(fpsCam.transform.up * upwardForce, ForceMode.Impulse);
+
+        bulletsLeft--;
+        bulletsShot++;
+
+        if (allowInvoke)
+        {
+            Invoke("ResetShot", timeBetweenShooting);
+            allowInvoke = false;
+        }
+
+        //if want shotgun
+        if (bulletsShot < bulletsPerTap && bulletsPerTap > 0)
+            Invoke("Shoot", timeBetweenShots);
+    }
+
+    private void ResetShot()
+    {
+        readyToShoot = true;
+        allowInvoke = true;
+    }
+
+    private void Reload()
+    {
+        reloading = true;
+        Invoke("ReloadFinished", reloadTime);
+    }
+    private void ReloadFinished()
+    {
+        bulletsLeft = magazineSize;
+        reloading = false;
+    }
+}
